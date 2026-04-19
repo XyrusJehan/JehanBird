@@ -14,10 +14,10 @@ import { Audio } from "expo-av";
 
 const { width, height } = Dimensions.get("window");
 
+// 🎮 game settings
 const BIRD_SIZE = 42;
 const PIPE_WIDTH = 75;
 const GAP = 190;
-
 const GRAVITY = 0.45;
 const JUMP = -9.5;
 const PIPE_SPEED = 3.8;
@@ -35,7 +35,6 @@ export default function Index() {
 
   const jumpSound = useRef(null);
   const hitSound = useRef(null);
-
   const tilt = useRef(new Animated.Value(0)).current;
 
   // =========================
@@ -77,9 +76,7 @@ export default function Index() {
       if (!status.isLoaded) return;
 
       await soundRef.current.replayAsync();
-    } catch (e) {
-      console.log("Sound safe blocked:", e);
-    }
+    } catch {}
   };
 
   // =========================
@@ -111,7 +108,7 @@ export default function Index() {
   }, [velocity, birdY, gameOver]);
 
   // =========================
-  // 🟩 SPAWN PIPE
+  // 🟩 PIPE SPAWN
   // =========================
   const spawnPipe = () => {
     setPipes(prev => {
@@ -130,7 +127,7 @@ export default function Index() {
   };
 
   // =========================
-  // 💀 COLLISION CHECK
+  // 💀 COLLISION
   // =========================
   const checkCollision = async () => {
     for (let p of pipes) {
@@ -193,10 +190,10 @@ export default function Index() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={flap}>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <View style={styles.gameArea}>
 
-        {/* Bird */}
+        {/* Bird (CENTER FIXED) */}
         <Animated.View
           style={[
             styles.birdWrap,
@@ -249,8 +246,9 @@ export default function Index() {
             </Pressable>
           </View>
         )}
+
       </View>
-    </TouchableWithoutFeedback>
+    </View>
   );
 }
 
@@ -258,11 +256,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#74c0fc",
+    alignItems: "center",
+  },
+
+  // 🎯 FIXED CENTER GAME AREA (THIS FIXES VERCEL ISSUE)
+  gameArea: {
+    flex: 1,
+    width: "100%",
+    maxWidth: 500,
+    overflow: "hidden",
   },
 
   birdWrap: {
     position: "absolute",
-    left: width / 2 - 21,
+    left: "50%",
+    marginLeft: -21, // half of bird size
   },
 
   bird: {
@@ -298,8 +306,8 @@ const styles = StyleSheet.create({
 
   overlay: {
     position: "absolute",
-    width,
-    height,
+    width: "100%",
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.6)",
